@@ -1,0 +1,60 @@
+#video-wrapper {
+	text-align: center;
+	background-color: #343434;
+	border-radius: 4px;
+}
+#remote-video {
+	max-width: 100%;
+	max-height: 90vh;
+	border-radius: 4px;
+}
+#local-video {
+	z-index: 1;
+	position: absolute;
+	right: 1.5rem;
+	bottom: 1.5rem;
+	width: 10vw;
+	height: 10vw;
+	max-width: 10rem;
+	max-height: 10rem;
+	border: 3px solid white;
+	border-radius: 4px;
+}
+
+.main {
+	display: flex;
+}
+
+.container-fluid {
+	width: 200px;
+	flex-grow: 1;
+}
+
+.online-div {
+	width: 150px;
+}
+
+.user {
+	display: flex;
+	justify-content: space-around;
+	margin-bottom: 15px;
+}
+
+.online-user {
+	display: flex;
+	width: 65px;
+	justify-content: space-around;
+}
+
+.dot {
+	height: 25px;
+	width: 25px;
+	background-color: rgb(24, 200, 24);
+	border-radius: 50%;
+	display: inline-block;
+}
+
+.call-btn {
+	border: 1px solid black;
+	border-radius: 8px;
+}

@@ -3,7 +3,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Peer, MediaConnection, PeerJSOption } from 'peerjs';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-
+import { HttpClient, HttpResponse} from '@angular/common/http';
+import { map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -21,7 +22,9 @@ export class CallService {
     private isCallStartedBs = new Subject<boolean>();
     public isCallStarted$ = this.isCallStartedBs.asObservable();
     
-    constructor(private snackBar: MatSnackBar) { }
+    constructor(private snackBar: MatSnackBar, 
+        private _http: HttpClient
+        ) { }
 
     public initPeer(): string {
         if (!this.peer || this.peer.disconnected) {
@@ -47,33 +50,30 @@ export class CallService {
         }
     }
 
+    public establishChat(remotePeerId: string) {
+        const conn = this.peer.connect(remotePeerId);
+
+        conn.on('open', function() {
+			conn.on('data', function(data) {
+				console.log('Receiveddd', data);
+			});
+            conn.send('Hello from phone!');
+		});		
+    }
+
     public async establishMediaCall(remotePeerId: string) {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            const connection = this.peer.connect(remotePeerId);
-            connection.on('error', err => {
-                console.error(err);
-                this.snackBar.open('Close');
-            });
-
+            const conn = this.peer.connect(remotePeerId);
+            
             this.mediaCall = this.peer.call(remotePeerId, stream);
-            if (!this.mediaCall) {
-                let errorMessage = 'Unable to connect to remote peer';
-                this.snackBar.open(errorMessage, 'Close');
-                throw new Error(errorMessage);
-            }
+
             this.localStreamBs.next(stream);
             this.isCallStartedBs.next(true);
-
             this.mediaCall.on('stream',
                 (remoteStream) => {
                     this.remoteStreamBs.next(remoteStream);
                 });
-            this.mediaCall.on('error', err => {
-                this.snackBar.open('Close');
-                console.error(err);
-                this.isCallStartedBs.next(false);
-            });
             this.mediaCall.on('close', () => this.onCallClose());
         }
         catch (ex) {
@@ -133,6 +133,34 @@ export class CallService {
         this.mediaCall?.close();
         this.peer?.disconnect();
         this.peer?.destroy();
+    }
+
+    public userOnline(data) {
+        return this._http.post('/api/online', data).pipe(
+            map((res: HttpResponse<Response>) => {
+            return res;
+        }));
+    }
+
+    public userOffline(data) {
+        return this._http.post('/api/offline', data).pipe(
+            map((res: HttpResponse<Response>) => {
+            return res;
+        }));
+    }
+
+    public users() {
+        return this._http.post('/api/users', {}).pipe(
+            map((res: HttpResponse<Response>) => {
+            return res;
+        }));
+    }
+
+    public getUserId(data) {
+        return this._http.post('/api/id', data).pipe(
+            map((res: HttpResponse<Response>) => {
+            return res;
+        }));
     }
 
 }

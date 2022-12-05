@@ -1,0 +1,29 @@
+<div class="main">
+    <div class="container-fluid">
+
+        <h1>Welcome, {{username}}</h1>
+        <input type="text" placeholder="Message" id="message-input">
+        <input type="submit" value="Send" (click)="sendMessage()">
+        <div class="messages">
+            <h2>nika: test</h2>
+        </div>
+    </div>
+        
+    <div class="online-div">
+        <h2>Online Users:</h2>
+    <div class="users">
+        
+        <div *ngFor="let user of users">
+            <div class="user" *ngIf="user != username">
+                <div class="online-user">
+                    <span class="dot"></span>
+                    <p>{{user}}</p>
+                </div>
+                <button class="call-btn" (click)="connectUser($event)" id="{{user}}">Connect</button>
+            </div>
+        </div>
+        
+    </div>
+  </div>
+</div>
+  <router-outlet (window:unload)="onClose()"></router-outlet>
